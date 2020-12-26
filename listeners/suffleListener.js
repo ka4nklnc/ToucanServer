@@ -16,18 +16,26 @@ let pagelimit = 15;
  * error codes
  *
  */
-router.get("getsuffle", true, (ws, res) => {
-  if(ws.user == null) return console.log("getsuffle","ERROR User Null");
-  console.log("GetSuffle",res.data.page);
-  userModel
-    .find({}, (err, resDb) => {
-      console.log("suffleListener", "getsuffle", resDb.length);
-      var list = convertUserToSuffle(resDb, ws.user);
-      ws.sendCallback(new JSONFormat(list, res.data.page, "getsuffle", true));
-    })
+router.get("getsuffle", true, async (ws, res) => {
+  if (ws.user == null) return console.log("getsuffle", "ERROR User Null");
+
+  let where = [
+    { username: { $regex: res.data.search, $options: "i" } },
+    { namesurname: { $regex: res.data.search, $options: "i" } },
+  ];
+
+  let suffleList = await userModel
+    .find({ $or: where })
     .sort({ vipstatus: -1, lastseen: -1 })
     .limit(pagelimit)
     .skip(res.data.page * pagelimit);
+
+  if (!suffleList) return;
+
+  var list = convertUserToSuffle(suffleList, ws.user);
+
+  ws.sendCallback(new JSONFormat(list, res.data.page, "getsuffle", true));
+
 });
 
 function convertUserToSuffle(_list, user) {
@@ -39,11 +47,12 @@ function convertUserToSuffle(_list, user) {
         username: model.username,
         uid: model.userId,
         namesurname: model.namesurname,
-        profileURL: model.profileUrl,
+        profileurl: model.profileurl,
+        coverurl: model.coverurl,
         lastseen: model.lastseen,
         liveenum: 0,
         vipstatus: model.vipStatus,
-        vipfinishtime: model.vipFinishTime
+        vipfinishtime: model.vipFinishTime,
       });
   }
 

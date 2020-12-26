@@ -26,6 +26,6 @@ exports.sendNoti = (token, title, body, message, data) => {
 
   sender.send(msg, { registrationTokens: regTokens }, (err, res) => {
     if (err) console.log("pushnotificationHelper", "sendNoti", err);
-    else console.log("pushNoti", "sendNoti", res);
+    else console.log("pushNoti", "sendNoti");
   });
 };

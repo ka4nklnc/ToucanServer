@@ -3,7 +3,8 @@ module.exports.UserModel = function(userModel) {
   this.username = userModel.username;
   this.email = userModel.email;
   this.phone = userModel.phone;
-  this.profileurl = userModel.profileUrl;
+  this.profileurl = userModel.profileurl;
+  this.coverurl = userModel.coverurl,
   this.namesurname = userModel.namesurname;
   this.bio = userModel.bio;
   this.follower = userModel.follower;
@@ -23,7 +24,8 @@ module.exports.UserModelList = function(userList) {
       username: element.username,
       email: element.email,
       phone: element.phone,
-      profileurl: element.profileUrl,
+      profileurl: element.profileurl,
+      coverurl:element.coverurl,
       namesurname: element.namesurname,
       bio: element.bio,
       follower: element.follower,
@@ -43,7 +45,8 @@ module.exports.LoginUserModel = function(userModel) {
   this.username = userModel.username;
   this.email = userModel.email;
   this.phone = userModel.phone;
-  this.profileurl = userModel.profileUrl;
+  this.profileurl = userModel.profileurl;
+  this.coverurl = userModel.coverurl;
   this.namesurname = userModel.namesurname;
   this.bio = userModel.bio;
   this.follower = userModel.follower;

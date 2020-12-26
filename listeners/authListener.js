@@ -70,13 +70,12 @@ router.get("login", false, async (ws, res) => {
 });
 
 router.get("relogin", false, async (ws, res) => {
-  console.log("relogin", res);
   user.findOne({ userId: res.data.userId }, (err, resDb) => {
     if (!resDb) return send(ws, null, new JSONSuccessFormat("", "logouth"));
 
     //update new token
 
-    if (resDb) {
+    else {
       var random = randomString(150);
 
       if (!resDb.token) resDb.user.token = random;
@@ -151,7 +150,7 @@ router.get("register", false, async (ws, res) => {
       username: res.data.username,
       email: res.data.email,
       phone: res.data.phone,
-      profileUrl: "default",
+      profileurl: "default",
       namesurname: res.data.namesurname,
       bio: "",
       follower: 0,
@@ -248,9 +247,7 @@ async function usernameCheck(nick) {
 }
 
 function onlinestatus(userId, state) {
-  console.log("authlistener", "onlinestatus", "trigger");
   user.findOne({ userId: userId }, (err, resDb) => {
-    console.log("authlistener", "onlinestatus", resDb.onlinefollowlist);
     resDb.onlinefollowlist.forEach((v, i) => {
       sendUser(
         v,

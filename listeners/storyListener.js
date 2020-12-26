@@ -3,150 +3,144 @@ const e = require("cors");
 let storyDb = require("../models/database/storyModel");
 let userDb = require("../models/database/userModel");
 let {
-  JSONErrorFormat,
-  JSONSuccessFormat,
-  JSONFormat,
+    JSONErrorFormat,
+    JSONSuccessFormat,
+    JSONFormat,
 } = require("../models/types/JSONFormat");
 let { StoryModel, StoryModelList } = require("../models/types/storyModel");
 let router = require("./_routerListener");
 let pagelimit = 15;
 
-router.get("getmystory", true, async (ws, result) => {
-  if (!ws.user) return;
-  let list = await storyDb
-    .find({ userId: ws.user.userId })
-    .limit(pagelimit)
-    .skip(result.data.page * pagelimit);
+router.get("getuserstory", true, async(ws, result) => {
+    if (!ws.user) return;
+    let list = await storyDb
+        .find({ userId: result.data.user })
+        .limit(pagelimit)
+        .skip(0);
 
-  ws.sendCallback(
-    new JSONFormat(StoryModelList(list), result.data.page, "getmystory", true)
-  );
+    console.log(list)
+    ws.sendCallback(
+        new JSONFormat(StoryModelList(list, [ws.user], ws.user.userId), result.data.page, "getmystory", true)
+    );
 });
 
-router.get("getstory", true, async (ws, result) => {
-  if (!ws.user) return;
+router.get("getstory", true, async(ws, result) => {
+    if (!ws.user) return;
 
-  let user = await userDb.findOne({ userId: ws.user.userId });
+    let user = await userDb.findOne({ userId: ws.user.userId });
 
-  let list = await storyDb
-    .find({ userId: [...user.followingList, ws.user.userId] })
-    .limit(pagelimit)
-    .skip(result.data.page * pagelimit);
+    let list = await storyDb
+        .find({ userId: [...user.followingList, ws.user.userId] })
+        .limit(pagelimit)
+        .skip(result.data.page * pagelimit);
 
-  console.log(list.length);
 
-  let userIds = list.map((e) => e.userId);
+    let userIds = list.map((e) => e.userId);
 
-  let users = await userDb.find({ userId: userIds });
+    let users = await userDb.find({ userId: userIds });
 
-  ws.sendCallback(
-    new JSONFormat(
-      StoryModelList(list, users, ws.user.userId),
-      result.data.page,
-      "getstory",
-      true
-    )
-  );
+    ws.sendCallback(
+        new JSONFormat(
+            StoryModelList(list, users, ws.user.userId),
+            result.data.page,
+            "getstory",
+            true
+        )
+    );
 });
 
-router.get("addstory", true, async (ws, result) => {
-  if (!ws.user) return;
+router.get("addstory", true, async(ws, result) => {
+    if (!ws.user) return;
 
-  let story = await storyDb.findOne({ userId: ws.user.userId });
-  console.log("addstory", story);
-  let shared = {
-    type: result.data.type,
-    storyurl: result.data.storyurl,
-    caption: result.data.caption,
-  };
+    let story = await storyDb.findOne({ userId: ws.user.userId });
+    console.log("addstory", story);
+    let shared = {
+        type: result.data.type,
+        storyurl: result.data.storyurl,
+        caption: result.data.caption,
+    };
 
-  if (story) story.sharedList.push(shared);
-  else
-    story = new storyDb({
-      type: result.data.type,
-      userId: ws.user.userId,
-      storyurl: result.data.storyurl,
-      caption: result.data.caption,
-      sharedList: [shared],
-    });
+    if (story) story.sharedList.push(shared);
+    else
+        story = new storyDb({
+            type: result.data.type,
+            userId: ws.user.userId,
+            storyurl: result.data.storyurl,
+            caption: result.data.caption,
+            sharedList: [shared],
+        });
 
-  await story.save();
+    await story.save();
 
-  ws.sendCallback(new JSONSuccessFormat(story, "addstory"));
+    ws.sendCallback(new JSONSuccessFormat(story, "addstory"));
 });
 
 router.get("updatestory", true, (ws, data, user) => {
-  let story = storyModel.updateOne(
-    { _id: data._id, userId: user._id },
-    {
-      type: data.type,
-      storyUrl: data.storyUrl,
-    }
-  );
+    let story = storyModel.updateOne({ _id: data._id, userId: user._id }, {
+        type: data.type,
+        storyUrl: data.storyUrl,
+    });
 
-  send(socket, user, "updatestory", new JSONSuccessFormat(story));
+    send(socket, user, "updatestory", new JSONSuccessFormat(story));
 });
 
 router.get("deletestory", true, (ws, data, user) => {
-  let story = storyModel.updateOne(
-    {
-      _id: data_id,
-      userId: user._id,
-    },
-    {
-      isDeleted: true,
+    let story = storyModel.updateOne({
+        _id: data_id,
+        userId: user._id,
+    }, {
+        isDeleted: true,
+    });
+
+    send(socket, user, "deletestory", new JSONSuccessFormat(data._id));
+});
+
+router.get("seenstory", true, async(ws, result) => {
+    if (!ws.user) return;
+
+    let storyModel = await storyDb.findOne({ _id: result.data._id });
+
+    let sharedIndex = storyModel.sharedList
+        .map((e) => e._id)
+        .indexOf(result.data.shared_id);
+
+    let seenIndex = storyModel.sharedList[sharedIndex].seenList
+        .map((e) => e.userId)
+        .indexOf(ws.user.userId);
+
+    if (seenIndex == -1)
+        storyModel.sharedList[sharedIndex].seenList.push({
+            userId: ws.user.userId,
+        });
+    storyModel.sharedList[sharedIndex].seencounter =
+        storyModel.sharedList[sharedIndex].seenList.length;
+
+    await storyModel.save();
+});
+
+router.get("likestory", true, async(ws, result) => {
+    if (!ws.user) return;
+
+    let storyModel = await storyDb.findOne({ _id: result.data._id });
+
+    let sharedIndex = storyModel.sharedList
+        .map((e) => e._id)
+        .indexOf(result.data.shared_id);
+
+    let likeIndex = storyModel.sharedList[sharedIndex].likeList
+        .map((e) => e.userId)
+        .indexOf(ws.user.userId);
+
+    if (likeIndex == -1) {
+        storyModel.sharedList[sharedIndex].likeList.push({
+            userId: ws.user.userId,
+        });
+    } else {
+        storyModel.sharedList[sharedIndex].likeList.splice(likeIndex, 1);
     }
-  );
 
-  send(socket, user, "deletestory", new JSONSuccessFormat(data._id));
-});
+    storyModel.sharedList[sharedIndex].likecounter = storyModel.sharedList[sharedIndex].likeList.length
 
-router.get("seenstory", true, async (ws, result) => {
-  if (!ws.user) return;
-
-  let storyModel = await storyDb.findOne({ _id: result.data._id });
-
-  let sharedIndex = storyModel.sharedList
-    .map((e) => e._id)
-    .indexOf(result.data.shared_id);
-
-  let seenIndex = storyModel.sharedList[sharedIndex].seenList
-    .map((e) => e.userId)
-    .indexOf(ws.user.userId);
-
-  if (seenIndex == -1)
-    storyModel.sharedList[sharedIndex].seenList.push({
-      userId: ws.user.userId,
-    });
-  storyModel.sharedList[sharedIndex].seencounter =
-    storyModel.sharedList[sharedIndex].seenList.length;
-
-  await storyModel.save();
-});
-
-router.get("likestory", true, async (ws, result) => {
-  if (!ws.user) return;
-
-  let storyModel = await storyDb.findOne({ _id: result.data._id });
-
-  let sharedIndex = storyModel.sharedList
-    .map((e) => e._id)
-    .indexOf(result.data.shared_id);
-
-  let likeIndex = storyModel.sharedList[sharedIndex].likeList
-    .map((e) => e.userId)
-    .indexOf(ws.user.userId);
-
-  if (likeIndex == -1) {
-    storyModel.sharedList[sharedIndex].likeList.push({
-      userId: ws.user.userId,
-    });
-  } else {
-    storyModel.sharedList[sharedIndex].likeList.splice(likeIndex, 1);
-  }
-
-  storyModel.sharedList[sharedIndex].likecounter = storyModel.sharedList[sharedIndex].likeList.length
-
-  await storyModel.save();
+    await storyModel.save();
 
 });

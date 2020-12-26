@@ -1,0 +1,21 @@
+{
+    "data": {
+        "data": {
+            "createat": "2020-12-25T11:31:16.339Z",
+            "isdeleted": false,
+            "messagestatus": 0,
+            "_id": "5fe5cdca76fa470ecee82e01",
+            "senderuid": "5fc9652b361ce20f74f6b623",
+            "receiveuid": "5fca3031bb20d1098ada7cef",
+            "message": "nrke",
+            "fileurl": "",
+            "filetype": 0,
+            "id": "zYV1sfVlC69la7H4mR9ZivSP"
+        },
+        "errorCode": -1,
+        "state": true,
+        "mUid": "gjEoK4pRRVuWU7Y0shL2UVJxwWVca41wzh0f0HIX7pEL1osNCTSpxz6O2UlQNSNd5KrVR4CN9EgzpcjV2GoTRkwPw1xFEaaCBuXuB9xQxlXm0HXt8O4kMGdnCKnD7MyktExGIVeUFme09GIKtUDqi5",
+        "path": "mUid"
+    },
+    "save": true
+}

@@ -3,6 +3,7 @@
 let mongoose = require("mongoose");
 let {Schema} = require("mongoose");
 let chatSchema = new Schema({
+  senderdbid:{type:String,required:true},
   createat: { type: Date, required: true, default: Date.now() },
   isdeleted: { type: Boolean, required: true, default: false },
   senderuid: { type: String, required: true },

@@ -3,7 +3,8 @@ module.exports.CommentModel = function(userModel, comment) {
   this.username = userModel.username;
   this.email = userModel.email;
   this.phone = userModel.phone;
-  this.profileurl = userModel.profileUrl;
+  this.profileurl = userModel.profileurl;
+  this.coverurl = userModel.coverurl
   this.namesurname = userModel.namesurname;
   this.bio = userModel.bio;
   this.follower = userModel.follower;
@@ -30,7 +31,8 @@ module.exports.CommentModelList = function(userList, commentList) {
         username: element.username,
         email: element.email,
         phone: element.phone,
-        profileurl: element.profileUrl,
+        profileurl: element.profilurl,
+        coverurl:element.coverurl,
         namesurname: element.namesurname,
         bio: element.bio,
         follower: element.follower,

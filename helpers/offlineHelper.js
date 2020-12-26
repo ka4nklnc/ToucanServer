@@ -1,119 +1,123 @@
 "use strict";
-let offline = require("../models/database/offlineModel");
+let offlineModel = require("../models/database/offlineModel");
 let senderHelper = require("./senderHelper");
 let {
-  JSONFormat,
-  JSONFormatManualmUid,
+    JSONFormat,
+    JSONFormatManualmUid,
 } = require("../models/types/JSONFormat");
 let authMiddleware = require("../middleware/authMiddleware");
+const { db } = require("../models/database/userModel");
 let _resenddata = [];
 
 module.exports.push = (userId, data, save) => {
-  var model = {
-    userId,
-    data: Object.create(data),
-    save,
-  };
-  _resenddata.push(model);
+    push(userId, data, save);
 };
 
 module.exports.remove = (mUid, ws) => {
-  remove(mUid, ws);
+    remove(mUid, ws);
 };
 
-module.exports.getDb = (userId) => {
-  offline.find({ userId: userId }, (err, resDb) => {
-    console.log("OfflineHelper", "User Offline Data Count:" + resDb.length);
-    resDb.forEach((v, i) => {
-      //v.remove();
-      var model = JSON.parse(v.data);
-      console.log("OfflineHelper", "DB data", model.data);
-     
+module.exports.getDb = async(userId) => {
+    var _offline = await offlineModel.findOne({ userId: userId });
 
-      _resenddata.push({
-        userId: v.userId,
-        data: new JSONFormatManualmUid(
-          v.mUid,
-          model.data,
-          model.errorCode,
-          model.path,
-          model.state
-        ),
-      });
+    console.log(`Offline waiting message count: ${_offline.data.length}`)
+    _offline.data.forEach((e) => {
+        push(_offline.userId, {...e }, true);
     });
-  });
+
+    _offline.data = [];
+    _offline.save();
 };
 
 function remove(mUidOrIndex, ws) {
-  var index = -1;
-  if (typeof mUidOrIndex === "string") {
-    index = _resenddata
-      .map(function(e) {
-        if (e.data != null) return e.data.mUid;
-      })
-      .indexOf(mUidOrIndex);
+    var index = -1;
+    var indexsub = -1;
 
-    //Db Remove
-    if (ws != null && ws.user != null && ws.user.userId != null)
-      offline.find({ mUid: mUidOrIndex, userId: ws.user.userId }, function(
-        err,
-        resDb
-      ) {
-        resDb.forEach((v, i) => {
-          v.remove();
-        });
-      });
-  } else if (typeof mUidOrIndex === "number") {
-    index = mUidOrIndex;
-  }
+    var index = _resenddata.findIndex(
+        (x) => x != null && x.userId == ws.user.userId
+    );
 
-  if (index != -1) {
-    console.log("OfflineHelper", "remove", "mUid:" + mUidOrIndex);
-    _resenddata.splice(index, 1);
-  }
+    if (index == -1) return;
+
+    if (typeof mUidOrIndex === "string") {
+        var indexsub = _resenddata[index]._resendList.map(v =>
+            v.data.mUid).indexOf(mUidOrIndex);
+    } else if (typeof mUidOrIndex === "number") {
+        index = mUidOrIndex;
+    }
+
+    if (index != -1 && indexsub != -1) {
+        // console.log("OfflineHelper", "remove", "mUid:" + mUidOrIndex);
+        _resenddata[index]._resendList.splice(indexsub, 1);
+    }
 }
 
-///OFFLINE DB SAVE TIMER
-setInterval(function() {
-  return;
-  _resenddata.forEach((v, i) => {
-    var dbSaveStatus = "";
-    if (v != null && v.ws != null && v.ws.user != null && v.save) {
-      var db = offline({
-        userId: v.ws.user.userId,
-        data: JSON.stringify(v.data),
-        mUid: v.data.mUid,
-      });
-      db.save();
-      dbSaveStatus = "Dbsave and ";
+module.exports.disconnect = async(userId) => {
+    var index = -1;
+    var indexsub = -1;
+
+    var index = _resenddata.map(v => v.userId).indexOf(userId)
+    if (index == -1) return;
+
+    var list = _resenddata[index]._resendList.filter((v) => v != null && v.save);
+    list = list.map(item => item.data)
+    console.log(map)
+    var dbList = await offlineModel.findOne({
+        userId: _resenddata[index].userId,
+    });
+    console.log(dbList);
+    if (dbList) {
+        dbList.data.push(...list);
+        dbList.save();
+    } else {
+        var offline = offlineModel({
+            userId: _resenddata[index].userId,
+            data: list,
+            mUid: "",
+        });
+
+        offline.save();
     }
-    remove(
-      _resenddata
-        .map(function(e) {
-          if (e != null && e.data != null && e.data.mUid != null)
-            return e.data.mUid;
-        })
-        .indexOf(v.data.mUid)
-    );
+    clearInterval(_resenddata[index].reSend);
 
-    console.log(
-      "OfflineHelper",
-      "_resend " + dbSaveStatus + " Clear. Waiting:",
-      _resenddata.length,
-      Date()
-    );
-  });
-}, 10000);
+    _resenddata.splice(index, 1);
+};
 
-///RESEND
-setInterval(function() {
-  console.log("RESEND",_resenddata.length)
-  _resenddata.forEach((v, i) => {
-    
-    var ws = authMiddleware.getLoginUser(v.userId);
+function resend(userId, response) {
+    var ws = authMiddleware.getLoginUser(userId);
+    for (var i = 0; i < response.length; i++) {
+        var model = response[i];
+        if (ws != null) {
+            var data = JSON.stringify(model.data)
+            console.log("resend", model)
+            ws.send(data);
+        }
+    }
+}
 
-    if (JSON.stringify(v.data) == "{}") _resenddata.splice(i, 1);
-    if (JSON.stringify(v.data) != "{}" && ws != null)
-      ws.send(JSON.stringify(v.data));
-  });
-}, 5000);
+function push(userId, data, save) {
+    var model = _resenddata.filter((v, i) => {
+        if (v.userId == userId) return v;
+    });
+
+    if (model.length == 0) {
+        model = {
+            userId,
+            _resendList: [{ data, save }],
+            reSend: setInterval(() => {
+                if (model._resendList.length > 0)
+                    resend(model.userId, model._resendList);
+            }, 5000),
+        };
+
+        _resenddata.push(model);
+
+
+        return;
+    } else model = model[0];
+    var obje = {
+        data,
+        save,
+    };
+    model._resendList.push(obje);
+}
