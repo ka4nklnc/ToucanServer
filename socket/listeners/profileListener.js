@@ -1,16 +1,16 @@
 "use strict";
-var userDb = require("../models/database/userModel");
+var userDb = require("../../models/database/userModel");
 var {
     LoginUserModel,
     UserModel,
     UserModelList,
-} = require("../models/types/userModel");
-var onlinestatusModel = require("../models/database/onlinestatusModel");
+} = require("../../models/types/userModel");
+var onlinestatusModel = require("../../models/database/onlinestatusModel");
 var {
     JSONErrorFormat,
     JSONSuccessFormat,
     JSONFormat,
-} = require("../models/types/JSONFormat");
+} = require("../../models/types/JSONFormat");
 var { send, sendUser } = require("../helpers/senderHelper");
 var router = require("./_routerListener");
 var authMiddleware = require("../middleware/authMiddleware");

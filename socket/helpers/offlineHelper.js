@@ -1,12 +1,12 @@
 "use strict";
-let offlineModel = require("../models/database/offlineModel");
+let offlineModel = require("../../models/database/offlineModel");
 let senderHelper = require("./senderHelper");
 let {
     JSONFormat,
     JSONFormatManualmUid,
-} = require("../models/types/JSONFormat");
+} = require("../../models/types/JSONFormat");
 let authMiddleware = require("../middleware/authMiddleware");
-const { db } = require("../models/database/userModel");
+const { db } = require("../../models/database/userModel");
 let _resenddata = [];
 
 module.exports.push = (userId, data, save) => {

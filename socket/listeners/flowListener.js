@@ -1,13 +1,13 @@
 "use strict";
 let router = require("./_routerListener");
-let userDb = require("../models/database/userModel");
-let flowDb = require("../models/database/flowModel");
-const { JSONSuccessFormat, JSONFormat } = require("../models/types/JSONFormat");
-const { FlowModel, FlowModelList } = require("../models/types/flowModel");
-const userModel = require("../models/database/userModel");
-const { UserModelList } = require("../models/types/userModel");
-const { CommentModelList } = require("../models/types/flowCommentModel");
-const { LikeModelList } = require("../models/types/flowLikeModel");
+let userDb = require("../../models/database/userModel");
+let flowDb = require("../../models/database/flowModel");
+const { JSONSuccessFormat, JSONFormat } = require("../../models/types/JSONFormat");
+const { FlowModel, FlowModelList } = require("../../models/types/flowModel");
+const userModel = require("../../models/database/userModel");
+const { UserModelList } = require("../../models/types/userModel");
+const { CommentModelList } = require("../../models/types/flowCommentModel");
+const { LikeModelList } = require("../../models/types/flowLikeModel");
 const pagelimit = 3;
 
 router.get("getuserflow", true, async(ws, result) => {

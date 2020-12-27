@@ -36,7 +36,6 @@ exports.login = (user, ws) => {
 exports.getLoginUser = (userId) => {
     var user = null;
     wss.clients.forEach((v) => {
-        console.log(v.user.username)
         if (v != null && v.user != null && v.user.userId == userId) {
             if (v.user != null && v.user.username != null)
                 console.log("Kullanıcı bulundu.", v.user.username)

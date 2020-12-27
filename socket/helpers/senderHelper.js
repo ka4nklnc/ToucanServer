@@ -2,7 +2,7 @@
 let WebSocket = require("ws");
 let authMiddleware = require("../middleware/authMiddleware");
 let offlineHelper = require("./offlineHelper");
-let offlineModel = require("../models/database/offlineModel");
+let offlineModel = require("../../models/database/offlineModel");
 /**
  *
  * @param {*} socket

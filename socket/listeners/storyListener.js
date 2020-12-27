@@ -1,13 +1,13 @@
 "use strict";
 const e = require("cors");
-let storyDb = require("../models/database/storyModel");
-let userDb = require("../models/database/userModel");
+let storyDb = require("../../models/database/storyModel");
+let userDb = require("../../models/database/userModel");
 let {
     JSONErrorFormat,
     JSONSuccessFormat,
     JSONFormat,
-} = require("../models/types/JSONFormat");
-let { StoryModel, StoryModelList } = require("../models/types/storyModel");
+} = require("../../models/types/JSONFormat");
+let { StoryModel, StoryModelList } = require("../../models/types/storyModel");
 let router = require("./_routerListener");
 let pagelimit = 15;
 

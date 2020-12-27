@@ -4,10 +4,10 @@ let {
     JSONErrorFormat,
     JSONSuccessFormat,
     JSONFormat,
-} = require("../models/types/JSONFormat");
-let chatModel = require("../models/database/chatModel");
-let userModel = require("../models/database/userModel");
-let router = require("../listeners/_routerListener");
+} = require("../../models/types/JSONFormat");
+let chatModel = require("../../models/database/chatModel");
+let userModel = require("../../models/database/userModel");
+let router = require("./_routerListener");
 let gcm = require("../helpers/pushnotiHelper");
 const { ObjectId } = require("mongodb");
 
@@ -185,7 +185,6 @@ router.get("statuschangemessage", true, async(ws, res) => {
             senderuid: res.data.senderuid,
             messagestatus: { $lt: res.data.messagestatus },
         });
-        console.log("MSG", message == null)
         if (message) {
             await message.update({ messagestatus: res.data.messagestatus });
             message.save();
