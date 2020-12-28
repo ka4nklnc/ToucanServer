@@ -7,10 +7,10 @@ import express from "express";
 let app = express();
 
 
-app.use("/api/flow", flowController)
-app.use("/api/profile", profileController)
-app.use("/api/story", storyController)
-app.use("/api/suffle", suffleController)
+// app.use("/api/flow", flowController)
+// app.use("/api/profile", profileController)
+// app.use("/api/story", storyController)
+// app.use("/api/suffle", suffleController)
 
 
 let server = app.listen(9081, function() {

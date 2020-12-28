@@ -16,3 +16,7 @@ mongoose.connect(
         else console.log("Connected MongoDb.");
     }
 );
+
+// import email from './restapi/Helpers/MailHelper'
+
+// email.loginMail("link", "Kaan Kılınç", "kaankilinc@hotmail.com")
