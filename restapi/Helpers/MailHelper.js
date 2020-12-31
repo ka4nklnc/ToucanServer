@@ -26,6 +26,24 @@ module.exports.loginMail = function(link, namesurname, email) {
 }
 
 
+module.exports.verificationMail = function(verificationCode, email) {
+    ejs
+        .renderFile(path.join(__dirname, "../template/EmailVerificaiton.ejs"), {
+            link: 'http://www.puasnow.com/login?verificaitoncode=' + verificationCode
+        })
+        .then(emailtemplate => {
+            //mail gönderme kısmı
+            sendmail(email, "Puasnow Hesap Doğrulama", "", emailtemplate)
+        })
+        .catch(err => {
+            console.log(
+                "Error Rendering emailTemplate",
+                err
+            );
+        });
+}
+
+
 let sendmail = function(to, subject, text, html) {
     //E-posta ayarları
     //Şu an için yandex mail üzerinden işlem gerçekleştirilmekte.

@@ -19,4 +19,4 @@ mongoose.connect(
 
 // import email from './restapi/Helpers/MailHelper'
 
-// email.loginMail("link", "Kaan Kılınç", "kaankilinc@hotmail.com")
+// email.loginMail("http://www.puasnow.com", "Kaan Kılınç", "ka4nklnc@gmail.com")
