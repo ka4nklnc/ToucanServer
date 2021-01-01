@@ -1,7 +1,7 @@
 "use strict";
 
-let account = require("../../models/database/accountModel");
-let user = require("../../models/database/userModel");
+let account = require("../../models/database/accountDb");
+let user = require("../../models/database/userDb");
 let { LoginUserModel, UserModel } = require("../../models/types/userModel");
 let { send } = require("../helpers/senderHelper");
 let auth = require("../middleware/authMiddleware");

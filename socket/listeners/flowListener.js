@@ -1,10 +1,10 @@
 "use strict";
 let router = require("./_routerListener");
-let userDb = require("../../models/database/userModel");
+let userDb = require("../../models/database/userDb");
 let flowDb = require("../../models/database/flowModel");
 const { JSONSuccessFormat, JSONFormat } = require("../../models/types/JSONFormat");
 const { FlowModel, FlowModelList } = require("../../models/types/flowModel");
-const userModel = require("../../models/database/userModel");
+const userModel = require("../../models/database/userDb");
 const { UserModelList } = require("../../models/types/userModel");
 const { CommentModelList } = require("../../models/types/flowCommentModel");
 const { LikeModelList } = require("../../models/types/flowLikeModel");

@@ -1,5 +1,5 @@
 "use strict";
-let userModel = require("../../models/database/userModel");
+let userModel = require("../../models/database/userDb");
 let { send } = require("../helpers/senderHelper");
 let {
     JSONErrorFormat,

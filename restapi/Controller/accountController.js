@@ -1,10 +1,9 @@
 import express from 'express'
-import userDb from '../../models/database/userModel'
-import accountDb from "../../models/database/accountModel"
+import userDb from '../../models/database/userDb'
+import accountDb from "../../models/database/accountDb"
 import mail from '../Helpers/MailHelper'
 import random from '../../socket/helpers/randomHelper'
 import JDT from '../models/JDTModel'
-import Email from 'email-templates'
 
 let router = express.Router();
 
@@ -32,8 +31,6 @@ router.post("/signin", async function(req, res) {
         console.log(err, res)
     });
 
-    console.log(accountModel)
-
     if (accountModel != null) {
 
         if (accountModel.isverification) {
@@ -54,7 +51,58 @@ router.post("/signin", async function(req, res) {
 
 })
 
-router.post("/signup", function(req, res) {})
+router.post("/signup", async function(req, res) {
+    console.log("signup", req.body)
+
+    let accountEmailModel = await accountDb.findOne({ email: req.body.email });
+
+    let accountPhoneModel = await accountDb.findOne({ phone: req.body.phone })
+    if (accountEmailModel) {
+        return res.send(JDT.Model(null, false, 402))
+    }
+
+    if (accountPhoneModel) {
+        return res.send(JDT.Model(null, false, 403))
+    }
+
+    if (req.body.password.length < 6) {
+        return res.send(JDT.Model(null, false, 401))
+    }
+
+    //Kullanıcı hesabı oluşturma adımları.
+    //accountDb
+    let newAccountModel = new accountDb({
+        username: "test",
+        email: req.body.email,
+        phone: req.body.phone,
+        password: req.body.password,
+    });
+
+    await newAccountModel.save()
+    newAccountModel.username = newAccountModel._id;
+    await newAccountModel.save()
+
+    let newUserModel = new userDb({
+        userId: newAccountModel._id,
+        username: newAccountModel._id,
+        email: req.body.email,
+        phone: req.body.phone,
+        profileurl: "default",
+        namesurname: req.body.namesurname,
+        bio: "",
+        follower: 0,
+        following: 0,
+        shared: 0,
+        vipStatus: false,
+        vipFinishTime: Date.now(),
+        cloudMessagingToken: "x",
+        token: newAccountModel._id
+    })
+
+    await newUserModel.save()
+
+    res.send(JDT.Model(newUserModel))
+})
 
 router.get("/reLogin", function(req, res) {})
 
@@ -88,6 +136,26 @@ router.get("/checkmail/:id", async function(req, res) {
 
 })
 
+router.get("/resetpassword/:id", async function(req, res) {
+
+    console.log("resetpassword", req.params);
+
+    let accountModel = await accountDb.findOne({
+        email: req.params.id
+    })
+
+    if (accountModel) {
+        accountModel.password = random.randomString(6)
+        accountModel.save()
+        sendNewPassword(accountModel)
+    }
+
+    res.send(JDT.Model())
+})
+
+function sendNewPassword(accountModel) {
+    mail.passwordLost(accountModel.password, accountModel.email)
+}
 
 function sendVerificationMail(accountModel) {
     var randomString = random.randomString(150)

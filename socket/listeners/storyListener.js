@@ -1,7 +1,7 @@
 "use strict";
 const e = require("cors");
 let storyDb = require("../../models/database/storyModel");
-let userDb = require("../../models/database/userModel");
+let userDb = require("../../models/database/userDb");
 let {
     JSONErrorFormat,
     JSONSuccessFormat,

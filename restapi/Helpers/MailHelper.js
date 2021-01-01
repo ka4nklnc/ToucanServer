@@ -43,6 +43,23 @@ module.exports.verificationMail = function(verificationCode, email) {
         });
 }
 
+module.exports.passwordLost = function(newPassword, email) {
+    ejs
+        .renderFile(path.join(__dirname, "../template/ForgotPassword.ejs"), {
+            newpassword: newPassword
+        })
+        .then(emailtemplate => {
+            //mail gönderme kısmı
+            sendmail(email, "Puasnow Hesap Doğrulama", "", emailtemplate)
+        })
+        .catch(err => {
+            console.log(
+                "Error Rendering emailTemplate",
+                err
+            );
+        });
+}
+
 
 let sendmail = function(to, subject, text, html) {
     //E-posta ayarları

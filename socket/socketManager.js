@@ -1,7 +1,7 @@
 import _routerListener from "./listeners/_routerListener";
 import authMiddleware from "./middleware/authMiddleware";
 import offlineHelper from "./helpers/offlineHelper";
-import userModel from "../models/database/userModel";
+import userModel from "../models/database/userDb";
 import { JSONFormat } from "../models/types/JSONFormat";
 import { sendUser } from "./helpers/senderHelper";
 

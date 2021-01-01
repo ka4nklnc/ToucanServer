@@ -1,5 +1,5 @@
 "use strict";
-var userDb = require("../../models/database/userModel");
+var userDb = require("../../models/database/userDb");
 var {
     LoginUserModel,
     UserModel,

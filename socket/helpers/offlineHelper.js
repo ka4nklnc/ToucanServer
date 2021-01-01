@@ -6,7 +6,7 @@ let {
     JSONFormatManualmUid,
 } = require("../../models/types/JSONFormat");
 let authMiddleware = require("../middleware/authMiddleware");
-const { db } = require("../../models/database/userModel");
+const { db } = require("../../models/database/userDb");
 let _resenddata = [];
 
 module.exports.push = (userId, data, save) => {

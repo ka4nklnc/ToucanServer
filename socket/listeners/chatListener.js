@@ -6,7 +6,7 @@ let {
     JSONFormat,
 } = require("../../models/types/JSONFormat");
 let chatModel = require("../../models/database/chatModel");
-let userModel = require("../../models/database/userModel");
+let userModel = require("../../models/database/userDb");
 let router = require("./_routerListener");
 let gcm = require("../helpers/pushnotiHelper");
 const { ObjectId } = require("mongodb");
