@@ -9,13 +9,13 @@ import bodyParser from 'body-parser'
 let app = express();
 
 // first
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// app.use("/api/flow", flowController)
+app.use("/api/flow", flowController)
 app.use("/api/profile", profileController)
     // app.use("/api/story", storyController)
-    // app.use("/api/suffle", suffleController)
+app.use("/api/suffle", suffleController)
 app.use("/api/account", accountController)
 
 let server = app.listen(9081, function() {

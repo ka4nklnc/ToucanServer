@@ -1,7 +1,7 @@
 "use strict";
 let router = require("./_routerListener");
 let userDb = require("../../models/database/userDb");
-let flowDb = require("../../models/database/flowModel");
+let flowDb = require("../../models/database/flowDb");
 const { JSONSuccessFormat, JSONFormat } = require("../../models/types/JSONFormat");
 const { FlowModel, FlowModelList } = require("../../models/types/flowModel");
 const userModel = require("../../models/database/userDb");
