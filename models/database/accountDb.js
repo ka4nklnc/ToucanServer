@@ -8,6 +8,7 @@ var accountSchema = new mongoose.Schema({
     email: { type: String, required: true, lowercase: true },
     phone: { type: String, required: true },
     password: { type: String, required: true },
+    verificationcode: { type: String },
     isverification: { type: Boolean, require: true, default: false },
 }, { timestamps: true });
 

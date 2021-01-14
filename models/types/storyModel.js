@@ -20,7 +20,6 @@ module.exports.StoryModelList = function(list, users, userId) {
     var returnModel = [];
     list.forEach(async(storyModel, i) => {
         let userModel = users.filter((e) => e.userId == storyModel.userId)[0];
-
         var story = {
             _id: storyModel._id,
             createdAt: storyModel.createdAt,

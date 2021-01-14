@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import socketManager from './socket/socketManager'
 
 //Apiyi ayağa kaldırıyoruz.
-import apiManager from './restapi/ApiManager'
+import apiManager from './website/exppressManager'
 
 
 

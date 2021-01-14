@@ -31,6 +31,7 @@ router.get("message", true, async(ws, res) => {
         senderdbid: res.data.id,
         createat: { $gte: date },
     });
+    console.log(chat, res.data);
     if (!chat) {
         chat = new chatModel({
             senderdbid: res.data.id,
@@ -41,6 +42,7 @@ router.get("message", true, async(ws, res) => {
             fileurl: res.data.fileurl,
             filetype: res.data.filetype,
         });
+        console.log(chat);
         await chat.save();
         //Receive
         setTimeout(function() {
@@ -67,6 +69,7 @@ router.get("message", true, async(ws, res) => {
                 bodyreceiveuid: chat.receiveuid,
                 bodysenderuid: chat.senderuid,
                 bodysenderprofileurl: ws.user.profileurl,
+                bodynamesurname: ws.user.namesurname,
                 bodytime: 0,
                 bodymessagestatus: 0,
                 body_id: chat._id,
@@ -79,9 +82,8 @@ router.get("message", true, async(ws, res) => {
                 data
             );
         }, 1000);
-
     }
-    console.log(chat)
+    console.log(chat);
     setTimeout(function() {
         sendUser(
             ws.user,
@@ -121,19 +123,20 @@ router.get("message", true, async(ws, res) => {
         //     true,
         //     true
         // );
-    }, 1000)
+    }, 1000);
 
-    console.log("SENDER KAanQA")
+    console.log("SENDER KAanQA");
 });
 
 router.get("updatemessage", true, async(ws, res) => {
     chatModel.findOne({
             _id: ObjectId(res.data._id),
-            senderuid: res.data.senderuid,
+            senderuid: ws.user.userId,
             receiveuid: res.data.receiveuid,
         },
         async(err, resDb) => {
-            console.log(res.data.fileUrl);
+            console.log(res.data);
+            console.log(resDb);
             if (err) return; //TODO ERROR MESSAGE
             resDb.message = res.data.message;
             resDb.fileurl = res.data.fileurl;
@@ -188,13 +191,12 @@ router.get("statuschangemessage", true, async(ws, res) => {
         if (message) {
             await message.update({ messagestatus: res.data.messagestatus });
             message.save();
-            console.log("pushed message status id", id)
+            console.log("pushed message status id", id);
             message_ids.push(id);
         }
     }
 
     if (message_ids.length > 0) {
-
         var returnModel = {
             receiveuid: ws.user.userId,
             senderuid: res.data.senderuid,
@@ -202,7 +204,8 @@ router.get("statuschangemessage", true, async(ws, res) => {
             _id: message_ids,
         };
 
-        sendUser(ws.user,
+        sendUser(
+            ws.user,
             new JSONSuccessFormat(returnModel, "statuschangemessage"),
             true,
             true
@@ -214,7 +217,7 @@ router.get("statuschangemessage", true, async(ws, res) => {
             true
         );
     } else {
-        console.log("Not have status message")
+        console.log("Not have status message");
     }
 });
 

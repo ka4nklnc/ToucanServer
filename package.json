@@ -17,6 +17,7 @@
         "email-templates": "^8.0.2",
         "email-validator": "^2.0.4",
         "express": "^4.17.1",
+        "express-hbs": "^2.3.4",
         "express-session": "^1.17.1",
         "firebase-admin": "^9.2.0",
         "keypress": "^0.2.1",

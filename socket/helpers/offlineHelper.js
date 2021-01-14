@@ -61,7 +61,7 @@ module.exports.disconnect = async(userId) => {
 
     var list = _resenddata[index]._resendList.filter((v) => v != null && v.save);
     list = list.map(item => item.data)
-    console.log(map)
+
     var dbList = await offlineModel.findOne({
         userId: _resenddata[index].userId,
     });

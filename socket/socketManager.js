@@ -7,17 +7,18 @@ import { sendUser } from "./helpers/senderHelper";
 
 let WebSocket = require("ws");
 
-const wss = new WebSocket.Server({ port: 3001 });
+const wss = new WebSocket.Server({ port: 3081 });
+console.log("WebSocket: ws://localhost:3081");
 authMiddleware.setWs(wss);
 wss.on("connection", function connection(ws) {
     console.log("Device connected.[" + authMiddleware.getCount() + "]", Date());
 
     ws.pinginterval = setInterval(function() {
-        ws.send("ping")
+        ws.send("ping");
         if (ws.terminatetimer != null) clearTimeout(ws.terminatetimer);
         ws.terminatetimer = setTimeout(function() {
-            clearTimeout(ws.terminatetimer)
-            clearInterval(ws.pinginterval)
+            clearTimeout(ws.terminatetimer);
+            clearInterval(ws.pinginterval);
             ws.terminate();
             ws.close(1000, "");
             authMiddleware.logouth(ws);
@@ -29,7 +30,6 @@ wss.on("connection", function connection(ws) {
     ws.on("message", function incoming(message) {
         onMessage(ws, message);
     });
-
 
     ws.on("close", function close(closecode) {
         if (ws != null && ws.user != null && ws.user.userId != null)
@@ -70,13 +70,13 @@ function onPing(ws) {
 }
 
 function receivePong(ws) {
-    clearTimeout(ws.terminatetimer)
+    clearTimeout(ws.terminatetimer);
 }
 
 function onMessage(ws, message) {
     if (message == "pong") {
         receivePong(ws);
-        return
+        return;
     }
 
     let data = ConvertMessage(message);
@@ -97,7 +97,8 @@ function onMessage(ws, message) {
             path: data.path,
         };
         //console.log("App", "Callback //:", data.path);
-        if (resend && ws.user != null) offlineHelper.push(ws.user.userId, model, save);
+        if (resend && ws.user != null)
+            offlineHelper.push(ws.user.userId, model, save);
         ws.send(JSON.stringify(model));
     };
 
