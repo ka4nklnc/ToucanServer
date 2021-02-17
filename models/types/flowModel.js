@@ -11,8 +11,8 @@ module.exports.FlowModel = function(flowModel, userId) {
     this.commentcounter = flowModel.commentcounter;
     this.likecounter = flowModel.likecounter;
     this.comments = flowModel.comments.filter((model) => model.userid == userId);
-    this.liked = flowModel.likes.indexOf(userId) != -1
-    this.seen = flowModel.seens.indexOf(userId) != -1
+    this.liked = flowModel.likes.indexOf(userId) != -1;
+    this.seen = flowModel.seens.indexOf(userId) != -1;
     return this;
 };
 
@@ -30,15 +30,16 @@ module.exports.FlowModelList = function(list, userId) {
             commentcounter: flowModel.commentcounter,
             likecounter: flowModel.likecounter,
             comments: [],
-            liked: flowModel.likes.indexOf(userId) != -1,
-            seen: flowModel.seens.indexOf(userId) != -1
+            liked: flowModel.likes.map((e) => e.userid).indexOf(userId) != -1,
+            seen: flowModel.seens.indexOf(userId) != -1,
         };
+
 
         object.comments = flowModel.comments.filter(
             (model) => model.userid == userId
         );
 
-        object.liked = flowModel.likes.indexOf(userId) != -1
+        // object.liked = flowModel.likes.indexOf(userId) != -1;
         returnModel.push(object);
     });
     return returnModel;

@@ -8,7 +8,7 @@ let {
 let chatModel = require("../../models/database/chatModel");
 let userModel = require("../../models/database/userDb");
 let router = require("./_routerListener");
-let gcm = require("../helpers/pushnotiHelper");
+let gcm = require("../../models/types/pushnotiHelper");
 const { ObjectId } = require("mongodb");
 
 /**
@@ -31,7 +31,6 @@ router.get("message", true, async(ws, res) => {
         senderdbid: res.data.id,
         createat: { $gte: date },
     });
-    console.log(chat, res.data);
     if (!chat) {
         chat = new chatModel({
             senderdbid: res.data.id,
@@ -42,7 +41,6 @@ router.get("message", true, async(ws, res) => {
             fileurl: res.data.fileurl,
             filetype: res.data.filetype,
         });
-        console.log(chat);
         await chat.save();
         //Receive
         setTimeout(function() {
@@ -64,26 +62,22 @@ router.get("message", true, async(ws, res) => {
                 ),
                 true
             );
+
             var data = {
-                bodymessage: chat.message,
-                bodyreceiveuid: chat.receiveuid,
-                bodysenderuid: chat.senderuid,
-                bodysenderprofileurl: ws.user.profileurl,
-                bodynamesurname: ws.user.namesurname,
-                bodytime: 0,
-                bodymessagestatus: 0,
-                body_id: chat._id,
+                createat: chat.createat,
+                isdeleted: false,
+                messagestatus: 0,
+                _id: chat._id,
+                senderuid: chat.senderuid,
+                receiveuid: chat.receiveuid,
+                message: chat.message,
+                fileurl: chat.fileurl,
+                filetype: chat.filetype,
+                id: 0,
             };
-            gcm.sendNoti(
-                user.cloudmessagingtoken,
-                user.namesurname,
-                JSON.stringify(chat),
-                chat.message,
-                data
-            );
+            gcm.sendNoti(user.cloudmessagingtoken, new gcm.Model("message", data));
         }, 1000);
     }
-    console.log(chat);
     setTimeout(function() {
         sendUser(
             ws.user,
@@ -124,8 +118,6 @@ router.get("message", true, async(ws, res) => {
         //     true
         // );
     }, 1000);
-
-    console.log("SENDER KAanQA");
 });
 
 router.get("updatemessage", true, async(ws, res) => {
@@ -135,8 +127,6 @@ router.get("updatemessage", true, async(ws, res) => {
             receiveuid: res.data.receiveuid,
         },
         async(err, resDb) => {
-            console.log(res.data);
-            console.log(resDb);
             if (err) return; //TODO ERROR MESSAGE
             resDb.message = res.data.message;
             resDb.fileurl = res.data.fileurl;
@@ -175,9 +165,9 @@ router.get("deletemessage", true, (ws, data, user) => {
 });
 
 router.get("statuschangemessage", true, async(ws, res) => {
+    console.log("statusMessage", res);
     if (!ws.user) return;
 
-    console.log("statusMessage", res);
     var message_ids = [];
     for (var i = 0; i < res.data._id.length; i++) {
         var id = res.data._id[i];

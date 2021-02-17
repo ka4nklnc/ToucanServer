@@ -19,7 +19,6 @@ router.get("/:page", _authMiddleware, async function(req, res) {
         .skip(req.params.page * pagelimit);
 
     var resultModel = FlowModelList(flowList, req.loginuser.userId);
-
     for (var i = 0; i < resultModel.length; i++) {
         var userId = resultModel[i].userid;
 

@@ -19,7 +19,8 @@ module.exports.send = (
 ) => {
     //TODO Offline db ye yazılacak
     socket.send(JSON.stringify(data));
-    if (resend && user != null) offlineHelper.push(user.userId, data, offlinesave);
+    if (resend && user != null)
+        offlineHelper.push(user.userId, data, offlinesave);
 };
 
 module.exports.sendUser = async(
@@ -34,27 +35,26 @@ module.exports.sendUser = async(
         if (typeof user == "string") websocket = authMiddleware.getLoginUser(user);
         else websocket = authMiddleware.getLoginUser(user.userId);
 
-        // console.log(data)
+        // console.log(data);
         // console.log(
-        //   "SenderHelper",
-        //   "sendUser",
-        //   websocket != null ? "User found" : "User Not Found"
+        //     "SenderHelper",
+        //     "sendUser",
+        //     websocket != null ? "User found" : "User Not Found"
         // );
+
         let json = JSON.stringify(data);
         let mUid = data.mUid;
 
         //Kullanıcının websocket bağlantısı aktif ise gönder.
         if (websocket) {
-            console.log('SenderHelper', websocket.user.username, data.path, data.mUid)
-                //Mesajı gönder.
+            console.log(websocket.user.username);
+            //Mesajı gönder.
             websocket.send(json);
 
             //Kullanıcı mesajı alana kadar ilet.
             if (resend) offlineHelper.push(websocket.user.userId, data, offlinesave);
-
             //Eğer mesaj çevrimdışı olarak kaydedilecekse.
             else if (offlinesave && json != "{}") {
-
                 //Kullanıcı online değilse çevrimdışı mesajlarına kaydet.
                 var offlineDb = await offlineModel.findOne({ userId: user.userId });
 
@@ -66,9 +66,9 @@ module.exports.sendUser = async(
                     var db = offlineModel({ userId: user.userId, data: [data] });
                     db.save();
                 }
-                console.log("Offline Db Push:", data.path, "User:", user.username)
+                console.log("Offline Db Push:", data.path, "User:", user.username);
             }
-            return;
+            return websocket != undefined;
         }
         //Kullanıcı online değilse ve mesajı eğer çevrimdışı olarak kaydedilecekse.
         else if (offlinesave && json != "{}") {
@@ -81,10 +81,10 @@ module.exports.sendUser = async(
                 var db = offlineModel({ userId: user.userId, data: [data] });
                 db.save();
             }
-            console.log("Offline Db Push:", data.path, "User:", user.username)
+            console.log("Offline Db Push:", data.path, "User:", user.username);
 
-            return;
-        } else return;
+            return false;
+        } else return false;
     } while (websocket);
 };
 

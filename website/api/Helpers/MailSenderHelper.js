@@ -69,14 +69,14 @@ let sendmail = function(to, subject, text, html) {
             host: 'smtp.yandex.com',
             port: 465,
             auth: {
-                user: 'noreply@puasnow.com',
-                pass: 'deliolan42'
+                user: process.env.NOREPLYMAIL,
+                pass: process.env.NOREPLYMAILPASSWORD
             },
             secure: true
         })
         //Mail içeriği ve alıcı ayarları
     var mailOptions = {
-        from: 'noreply@puasnow.com',
+        from: process.env.NOREPLYMAIL,
         to: to,
         subject: subject,
         text: text,

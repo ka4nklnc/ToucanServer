@@ -34,7 +34,6 @@ module.exports.get = (path, auth, callback) => {
 
 function callBack(ws, response, v) {
     var user = authMiddleware.isLogin(ws);
-
     if (!user) {
         return send(ws, null, new JSONErrorFormat(0, "relogin"));
     } else v.callback(ws, response, user);
@@ -53,3 +52,4 @@ require("./storyListener");
 require("./suffleListener");
 require("./profileListener");
 require("./deliveryListener");
+require("./onlineListener");

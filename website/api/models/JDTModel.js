@@ -14,7 +14,6 @@ module.exports = {
         this.data = data;
         this.success = success;
         this.errorcode = errorcode;
-        console.log(this);
         return this;
     },
 };

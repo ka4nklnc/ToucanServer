@@ -1,7 +1,10 @@
 "use strict";
 let random = require("../helpers/randomHelper");
 let offlineHelper = require("../helpers/offlineHelper");
+let userDb = require("../../models/database/userDb");
 const WebSocket = require("ws");
+const { JSONSuccessFormat } = require("../../models/types/JSONFormat");
+
 let wss;
 
 exports.isLogin = (ws) => {
@@ -27,6 +30,18 @@ exports.login = (user, ws) => {
     ws.user = user;
     offlineHelper.getDb(user.userId);
 };
+
+exports.relogin = async(ws, req) => {
+    let token = req.headers["authorization"];
+
+    if (!token) return;
+
+    var user = await userDb.findOne({ token: token });
+    if (user) {
+        ws.user = user;
+        offlineHelper.getDb(user.userId);
+    }
+};
 /**
  *
  * @param {*} userId
@@ -37,14 +52,9 @@ exports.getLoginUser = (userId) => {
     var user = null;
     wss.clients.forEach((v) => {
         if (v != null && v.user != null && v.user.userId == userId) {
-            if (v.user != null && v.user.username != null)
-                console.log("Kullanıcı bulundu.", v.user.username)
-            user = v
+            user = v;
         }
-
     });
-    if (user == null)
-        console.log("Kullanıcı bulunamadı.", userId)
     return user;
 };
 

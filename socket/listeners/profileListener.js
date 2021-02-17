@@ -36,8 +36,9 @@ router.get("getprofile", true, (ws, res) => {
     console.log("ProfileListener", "GetProfile", res);
     if (res.data.userId != "")
         userDb.findOne({ userId: res.data.userId }, (err, resDb) => {
-
-            ws.sendCallback(new JSONSuccessFormat(new UserModel(resDb), "getprofile"));
+            ws.sendCallback(
+                new JSONSuccessFormat(new UserModel(resDb), "getprofile")
+            );
         });
 });
 /**
@@ -95,14 +96,16 @@ router.get("addonlinestatus", true, (ws, res) => {
     if (!ws.user) return;
     userDb.findOne({ userId: res.data.userId }, (err, resDb) => {
         var state = true;
-        if (resDb.onlinefollowlist != null)
+        if (resDb != null && resDb.onlinefollowlist != null)
             resDb.onlinefollowlist.forEach((v, i) => {
                 if (v == ws.user.userId) state = false;
             });
 
         if (state) {
-            resDb.onlinefollowlist.push(ws.user.userId);
-            resDb.save();
+            try {
+                resDb.onlinefollowlist.push(ws.user.userId);
+                resDb.save();
+            } catch (e) {}
         }
     });
 });
@@ -117,6 +120,8 @@ router.get("getonlinestatus", true, (ws, res) => {
 
 router.get("GCMToken", true, (ws, res) => {
     try {
+        if (!ws.user) return;
+        console.log("SetGCMToken", ws.user.username);
         userDb.findOne({ userId: ws.user.userId }, (err, resDb) => {
             resDb.cloudmessagingtoken = res.data.token;
             resDb.save();

@@ -10,9 +10,9 @@ let WebSocket = require("ws");
 const wss = new WebSocket.Server({ port: 3081 });
 console.log("WebSocket: ws://localhost:3081");
 authMiddleware.setWs(wss);
-wss.on("connection", function connection(ws) {
+wss.on("connection", function connection(ws, req) {
     console.log("Device connected.[" + authMiddleware.getCount() + "]", Date());
-
+    authMiddleware.relogin(ws, req);
     ws.pinginterval = setInterval(function() {
         ws.send("ping");
         if (ws.terminatetimer != null) clearTimeout(ws.terminatetimer);
@@ -97,8 +97,9 @@ function onMessage(ws, message) {
             path: data.path,
         };
         //console.log("App", "Callback //:", data.path);
-        if (resend && ws.user != null)
+        if (resend && ws.user != null) {
             offlineHelper.push(ws.user.userId, model, save);
+        }
         ws.send(JSON.stringify(model));
     };
 

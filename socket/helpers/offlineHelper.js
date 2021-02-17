@@ -19,8 +19,8 @@ module.exports.remove = (mUid, ws) => {
 
 module.exports.getDb = async(userId) => {
     var _offline = await offlineModel.findOne({ userId: userId });
-
-    console.log(`Offline waiting message count: ${_offline.data.length}`)
+    if (!_offline) return;
+    console.log(`Offline waiting message count: ${_offline.data.length}`);
     _offline.data.forEach((e) => {
         push(_offline.userId, {...e }, true);
     });
@@ -40,8 +40,9 @@ function remove(mUidOrIndex, ws) {
     if (index == -1) return;
 
     if (typeof mUidOrIndex === "string") {
-        var indexsub = _resenddata[index]._resendList.map(v =>
-            v.data.mUid).indexOf(mUidOrIndex);
+        var indexsub = _resenddata[index]._resendList
+            .map((v) => v.data.mUid)
+            .indexOf(mUidOrIndex);
     } else if (typeof mUidOrIndex === "number") {
         index = mUidOrIndex;
     }
@@ -56,11 +57,11 @@ module.exports.disconnect = async(userId) => {
     var index = -1;
     var indexsub = -1;
 
-    var index = _resenddata.map(v => v.userId).indexOf(userId)
+    var index = _resenddata.map((v) => v.userId).indexOf(userId);
     if (index == -1) return;
 
     var list = _resenddata[index]._resendList.filter((v) => v != null && v.save);
-    list = list.map(item => item.data)
+    list = list.map((item) => item.data);
 
     var dbList = await offlineModel.findOne({
         userId: _resenddata[index].userId,
@@ -88,8 +89,7 @@ function resend(userId, response) {
     for (var i = 0; i < response.length; i++) {
         var model = response[i];
         if (ws != null) {
-            var data = JSON.stringify(model.data)
-            console.log("resend", model)
+            var data = JSON.stringify(model.data);
             ws.send(data);
         }
     }
@@ -111,7 +111,6 @@ function push(userId, data, save) {
         };
 
         _resenddata.push(model);
-
 
         return;
     } else model = model[0];

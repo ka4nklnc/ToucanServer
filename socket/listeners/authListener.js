@@ -68,11 +68,11 @@ router.get("login", false, async(ws, res) => {
 });
 
 router.get("relogin", false, async(ws, res) => {
+    return;
+    console.log("relogin", res.data);
     user.findOne({ userId: res.data.userId }, (err, resDb) => {
         if (!resDb) return send(ws, null, new JSONSuccessFormat("", "logouth"));
-
         //update new token
-
         else {
             var random = randomString(150);
 
@@ -91,6 +91,7 @@ router.get("relogin", false, async(ws, res) => {
         }
     });
 });
+
 /**
  * format errors
  * 101 Mail format

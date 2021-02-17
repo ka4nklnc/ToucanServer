@@ -2,21 +2,25 @@ let mongoose = require("mongoose");
 let { Schema } = require("mongoose");
 
 var followingSchema = new Schema({
-  userId: 'String',
+    userId: "String",
 });
 
 var followersSchema = new Schema({
-  userId:'String',
+    userId: "String",
 });
 
-var userSchema = new Schema(
-  {
+var onlineSchema = new Schema({
+    isonline: { type: Boolean, required: true, default: false },
+    lastonline: { type: Date, required: true, default: Date() },
+});
+
+var userSchema = new Schema({
     userId: { type: String, required: true },
     username: { type: String, required: true, lowercase: true },
     email: { type: String, required: true, lowercase: true },
     phone: { type: String, required: true },
-    profileurl: { type: String, required: true ,default:"default"},
-    coverurl: {type:String,required:true,default:"default"},
+    profileurl: { type: String, required: true, default: "default" },
+    coverurl: { type: String, required: true, default: "default" },
     namesurname: { type: String, required: true },
     bio: { type: String, required: false },
     follower: { type: Number, required: true, default: 0 },
@@ -26,11 +30,10 @@ var userSchema = new Schema(
     vipfinishtime: { type: Date, required: true, default: Date.now() },
     cloudmessagingtoken: { type: String, required: true, default: "x" },
     token: { type: String, required: true, default: "x" },
+    onlinestatus: onlineSchema,
     onlinefollowlist: [],
     followingList: [],
     followerList: [],
-  },
-  { timestamps: true }
-);
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);

@@ -30,10 +30,10 @@ module.exports.JSONErrorFormat = function(
     return JSON.stringify(this);
 };
 /**
- * 
- * @param {*} data 
- * @param {*} errorCode 
- * @param {*} path 
+ *
+ * @param {*} data
+ * @param {*} errorCode
+ * @param {*} path
  * @param {*} state false = error , true = success
  */
 module.exports.JSONFormat = function(
