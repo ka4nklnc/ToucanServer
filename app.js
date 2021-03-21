@@ -1,6 +1,6 @@
 "use strict";
 import mongoose from "mongoose";
-
+require("dotenv").config();
 //Soketi ayağa kaldırıyoruz.
 import socketManager from "./socket/socketManager";
 
